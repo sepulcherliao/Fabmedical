@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: ITSM-Middleware
+  description: It's the middleware service for data exchange between ITSM and eApproval
+  contact:
+    email: Sepulcher_Liao@htc.com
+servers:
+  - url: 'http://localhost:3000/sp/v1'
+tags:
+  - name: bpm-process
+    description: Operation with bpm process
+  - name: service-provider
+    description: Get detail of TISM ticket
+paths:
+  /startbpmprocess:
+    post:
+      tags:
+        - bpm-process
+      summary: Trigger BPM process
+      operationId: triggerBpmProcess
+      parameters:
+        - name: access_token
+          in: header
+          schema:
+            type: string
+      requestBody:
+        description: ITSM Ticket Metadata
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+        required: true
+      responses:
+        '200':
+          description: Successful call
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+components:
+  schemas:
+    Ticket:
+      required:
+        - applicantID
+        - applicantDepartmentID
+        - formData
+      type: object
+      properties:
+        applicantID:
+          type: string
+        applicantDepartmentID:
+          type: string
+        formData:
+          $ref: '#/components/schemas/FormData'
+    FormData:
+      required:
+        - documentNo
+        - brief
+      type: object
+      properties:
+        documentNo:
+          type: string
+        brief:
+          description: Ticket Subject
+          type: string
+        cosignerID:
+          type: string
+    ApiResponse:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+            - fail
+        message:
+          type: string
